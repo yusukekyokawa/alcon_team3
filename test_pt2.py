@@ -32,7 +32,7 @@ if __name__ == "__main__":
     save_dir = "./save_split"
     for idx, (img_path, uni1, uni2, uni3) in enumerate(zip(imglist, uni1_list, uni2_list, uni3_list)):
         save_path = save_dir + "/" + str(idx)
-        os.makedirs(save_rath, exist_ok = True)
+        os.makedirs(save_path, exist_ok = True)
 
     #画像を読み込む
     img = cv2.imread(img_path)
