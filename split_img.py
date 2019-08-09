@@ -35,18 +35,19 @@ if __name__ == "__main__":
         os.makedirs(save_path, exist_ok = True)
 
     #画像を読み込む
-    img = cv2.imread(img_path)
+        img = cv2.imread(img_path)
 
     #3等分する
-    img1, img2, img3 = split(img)
+        img1, img2, img3 = split(img)
 
     #img1の保存
-    cv2.imwrite(save_path+"/"+uni1+".jpg", img1)
+        cv2.imwrite(save_path+"/"+uni1+".jpg", img1)
 
     #img2の保存
-    cv2.imwrite(save_path+"/"+uni2+".jpg", img2)
+        cv2.imwrite(save_path+"/"+uni2+".jpg", img2)
 
     #img3の保存
-    cv2.imwrite(save_path+"/"+uni3+".jpg", img3)
-    print(idx)
+        cv2.imwrite(save_path+"/"+uni3+".jpg", img3)
+        
+        print(idx)
 
