@@ -1,9 +1,17 @@
-Dataset for Alcon2019
-Training and test data are contained in the below folders.
-The folders have following items.
+ # alcon_team3
 
-1. train/ : Training images and annotation file for 3 character recognition.
-2. train_kana/ : Training images for 1 character
-3. test/ : Test images and output CSV file
+## １．ファイル内容
 
+### ディレクトリ
 
+- srcs
+  - split_img.py 
+  - team3_algo.py	
+  - utils.py
+- csv_files
+  - annotataions.csv
+  - label.csv
+  - test_prediction.csv
+- CNN_models 学習実行ファイル
+  - a.h5
+- main.py 実行ファイル.テスト対象の画像を3等分し，いち文字ずつの画像を予測する
