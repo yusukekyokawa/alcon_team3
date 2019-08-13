@@ -5,9 +5,9 @@
 ### ディレクトリ
 
 - srcs
-  - split_img.py 
-  - team3_algo.py	
-  - utils.py
+  - split_img.py        画像を３等分する
+  - train.py       いち文字ずつ画像を学習させる．   
+  - utils.py     かなをunicodeに変換したりなどなどの関数が入っている．
 - csv_files
   - annotataions.csv
   - label.csv
