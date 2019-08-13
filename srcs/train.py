@@ -19,36 +19,66 @@ ClassNum = 48 # クラス数
 ImageData = [] # 画像を格納する配列
 LabelData = [] # ラベルを格納する配列
 # トレーニングデータがあるフォルダのパス
-FolderPath = "../alcon2019/dataset/train_kana/"
+FolderPath = "../../alcon2019/dataset/train_kana/"
 path = sorted(glob.glob(FolderPath + '**'))
 print(len(path))
 
-# with open("label.csv", "w") as f:
-#     f.write("index,unicode,kana"+"\n")
-# for index, folder in enumerate(path):
-#     FolderName = os.path.basename(folder)
-#     # csvに書き出し
-#     with open("label.csv", "a") as f:
-#         f.write(str(index) + "," + FolderName + "," + unicode_to_kana(FolderName) +  "\n")
-#     ImagePath = sorted(glob.glob(folder + '/*.jpg'))
-#     # サブフォルダーの中の画像枚数分繰り返す
-#     print("FolderName is {}".format(FolderName))
-#     for ImageFile in ImagePath:
-#         """
-#         img_to_array:PIL形式をndarrayに変換する
-#         load_img:画像を開く 
-#         target_sizeはリサイズする大きさ
-#         color_modeはRGB,grayscaleなど選べる
-#         """
-#         print(ImageFile)
-#         img = img_to_array(load_img(ImageFile, target_size=(64, 64), color_mode='grayscale'))
-#         # 画像を格納
-#         ImageData.append(img)
-#         # ラベルを格納
-#         LabelData.append(index)
+with open("label.csv", "w") as f:
+	f.write("index,unicode,kana"+"\n")
 
-#         # trainとtestに分ける。
+Xtrain = []
+Xtest = []
+Ytrain = []
+Ytest = []
+for index, folder in enumerate(path):
+	FolderName = os.path.basename(folder)
+	# csvに書き出し
+	with open("label.csv", "a") as f:
+		f.write(str(index) + "," + FolderName + "," + unicode_to_kana(FolderName) +  "\n")
+	ImagePath = sorted(glob.glob(folder + '/*.jpg'))
+	
+	print("FolderName is {}".format(FolderName))
+	# サブフォルダーの中の画像枚数分繰り返す
+	kanamoji_data = []
+	kanamoji_label = []
+	for ImageFile in ImagePath:
+		"""
+		img_to_array:PIL形式をndarrayに変換する
+		load_img:画像を開く 
+		target_sizeはリサイズする大きさ
+		color_modeはRGB,grayscaleなど選べる
+		"""
+		# print(ImageFile)
+		img = img_to_array(load_img(ImageFile, target_size=(64, 64), color_mode='grayscale'))
+		
+		# かな文字データに追加
+		kanamoji_data.append(img)
+		# かな文字ラベルに追加
+		kanamoji_label.append(index)
+	
+	print("{}".format(unicode_to_kana(FolderName)))
+	print("画像の総数は {}".format(len(kanamoji_data)))
+	tmp_Xtrain, tmp_Xtest, tmp_Ytrain, tmp_Ytest = train_test_split(kanamoji_data, kanamoji_label, test_size=0.2, random_state=111)
+	print("trainの枚数は {}".format(len(tmp_Xtrain)))
+	print("testの枚数は {}".format(len(tmp_Xtest)))
+	print("######################################")
+	# データをtrainsize0.8でsplitしたものを共通ファイルに追加
+	Xtrain.extend(tmp_Xtrain)
+	Xtest.extend(tmp_Xtest)
 
+	#　データをtestsize0.2でsplitしたものを共通ファイルに追加
+	Ytrain.extend(tmp_Ytrain)
+	Ytest.extend(tmp_Ytest)
+
+		########################
+		# 画像を格納
+		# ImageData.append(img)
+		# ラベルを格納
+		# LabelData.append(index)
+		########################
+
+	# trainとtestに分ける。
+	
 # # 正規化
 # ImageData = np.array(ImageData)
 # LabelData = np.array(LabelData)
@@ -80,7 +110,7 @@ Ytest  = pickle.load(open(os.path.join(ssd,'Ytest.pickle'),'rb'))
 # モデルの作成
 model = Sequential()
 model.add(Conv2D(16, (3, 3), input_shape=(Xtrain.shape[1:]),
-          activation='relu'))
+		  activation='relu'))
 model.add(Conv2D(32, (3,3), activation = 'relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))  
 model.add(Dropout(0.25))
@@ -91,17 +121,17 @@ model.add(Dense(ClassNum, activation='softmax'))
 model.compile(loss='categorical_crossentropy',optimizer=Adam(),metrics=['accuracy'])
 
 history = model.fit(Xtrain, Ytrain, 
-                batch_size=1024, epochs=10, 
-                validation_data=(Xtest,Ytest),
-                verbose=1)
-model.save('a.h5')
-model = load_model('a.h5')
+				batch_size=1024, epochs=10, 
+				validation_data=(Xtest,Ytest),
+				verbose=1)
+model.save('./CNN_models/a.h5')
+model = load_model('./CNN_models/a.h5')
 Ptest = []
 for i in model.predict(x=Xtest):
-        Ptest.append(np.argmax(i))
+		Ptest.append(np.argmax(i))
 Ttest = []
 for i in Ytest:
-        Ttest.append(np.argmax(i))
+		Ttest.append(np.argmax(i))
 f1_score = f1_score(Ttest, Ptest, average='macro')
 print('F値：', f1_score)
 
